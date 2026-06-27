@@ -147,7 +147,7 @@ Disponibles
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxL1hv4HLK--AWjPfDH5rfuTo4mWVYqbYT0XitBOcp9_CLto1EZ8IVcmH-yTygkPQsG9w/exec";
+const API = "https://script.google.com/macros/s/AKfycbwWFHXtoZM1U4YcN-kGu1iqxtxmTdILowww2Sjky4irsv7dUAdQ6zJbi3ckHs7I3LVENg/exec";
 const grid = document.getElementById("grid");
 
 async function cargarNumeros() {
@@ -166,10 +166,25 @@ async function cargarNumeros() {
         div.textContent = String(item.numero).padStart(2, "0");
 
         if (!vendido) {
-            div.addEventListener("click", function() {
+            div.addEventListener("click", async function() {
+                if (this.classList.contains("vendido")) return;
+
                 const numero = this.textContent.trim();
+
+                // Marcar en Google Sheets
+                await fetch(API, {
+                    method: "POST",
+                    body: new URLSearchParams({ numero: numero })
+                });
+
+                // Actualizar visualmente
+                this.classList.add("vendido");
+                const disp = document.getElementById("disponibles");
+                disp.textContent = parseInt(disp.textContent) - 1;
+
+                // Abrir WhatsApp
                 const mensaje = `Hola! Quiero apartar el número *${numero}* de la rifa de $1.000.000 💚`;
-                const url = `https://wa.me/573112777740?text=${encodeURIComponent(mensaje)}`;
+                const url = `https://wa.me/573001234567?text=${encodeURIComponent(mensaje)}`;
                 window.open(url, "_blank");
             });
         }
