@@ -178,6 +178,25 @@ async function cargarNumeros() {
 cargarNumeros();
 
 </script>
+<script>
+  // Cargar números vendidos guardados
+  let vendidos = JSON.parse(localStorage.getItem('numerosVendidos') || '[]');
 
+  // Aplicar estado rojo a los ya vendidos al cargar la página
+  document.querySelectorAll('.numero').forEach(function(num) {
+    if (vendidos.includes(num.textContent.trim())) {
+      num.classList.add('vendido');
+    }
+
+    // Al hacer clic
+    num.addEventListener('click', function() {
+      if (!this.classList.contains('vendido')) {
+        this.classList.add('vendido');
+        vendidos.push(this.textContent.trim());
+        localStorage.setItem('numerosVendidos', JSON.stringify(vendidos));
+      }
+    });
+  });
+</script>
 </body>
 </html>
