@@ -88,6 +88,10 @@
     background:#d63031 !important;
     cursor:not-allowed;
 }
+        .reservado {
+    background:#f39c12 !important;
+    cursor:not-allowed;
+}
         .numero:hover{
             transform:scale(1.08);
         }
@@ -158,33 +162,38 @@ async function cargarNumeros() {
     let disponibles = 0;
 
     datos.forEach(item => {
-        const vendido = item.estado.trim() === "Vendido";
-        if (!vendido) disponibles++;
+        const estado = item.estado.trim();
+        const vendido = estado === "Vendido";
+        const reservado = estado === "Reservado";
+        if (!vendido && !reservado) disponibles++;
 
         const div = document.createElement("div");
-        div.className = vendido ? "numero vendido" : "numero";
+        if (vendido) div.className = "numero vendido";
+        else if (reservado) div.className = "numero reservado";
+        else div.className = "numero";
+
         div.textContent = String(item.numero).padStart(2, "0");
 
-        if (!vendido) {
+        if (!vendido && !reservado) {
             div.addEventListener("click", async function() {
-                if (this.classList.contains("vendido")) return;
+                if (this.classList.contains("vendido") || this.classList.contains("reservado")) return;
 
                 const numero = this.textContent.trim();
 
-                // Marcar en Google Sheets
+                // Marcar como Reservado en Google Sheets
                 await fetch(API, {
                     method: "POST",
-                    body: new URLSearchParams({ numero: numero })
+                    body: new URLSearchParams({ numero: numero, estado: "Reservado" })
                 });
 
                 // Actualizar visualmente
-                this.classList.add("vendido");
+                this.classList.add("reservado");
                 const disp = document.getElementById("disponibles");
                 disp.textContent = parseInt(disp.textContent) - 1;
 
                 // Abrir WhatsApp
                 const mensaje = `Hola! Quiero apartar el número *${numero}* de la rifa de $1.000.000 💚`;
-                const url = `https://wa.me/573112777740?text=${encodeURIComponent(mensaje)}`;
+                const url = `https://wa.me/573001234567?text=${encodeURIComponent(mensaje)}`;
                 window.open(url, "_blank");
             });
         }
