@@ -158,19 +158,19 @@ async function cargarNumeros() {
     let disponibles = 0;
 
     datos.forEach(item => {
-        const vendido = item.estado === "Vendido";
+        const vendido = item.estado.trim() === "Vendido";
         if (!vendido) disponibles++;
 
         const div = document.createElement("div");
         div.className = vendido ? "numero vendido" : "numero";
         div.textContent = String(item.numero).padStart(2, "0");
 
-        // Solo los disponibles pueden clickearse
         if (!vendido) {
             div.addEventListener("click", function() {
-                this.classList.add("vendido");
-                const disp = document.getElementById("disponibles");
-                disp.textContent = parseInt(disp.textContent) - 1;
+                const numero = this.textContent.trim();
+                const mensaje = `Hola! Quiero apartar el número *${numero}* de la rifa de $1.000.000 💚`;
+                const url = `https://wa.me/573112777740?text=${encodeURIComponent(mensaje)}`;
+                window.open(url, "_blank");
             });
         }
 
