@@ -84,7 +84,10 @@
             font-weight:bold;
             transition:.2s;
         }
-
+.vendido{
+    background:#d63031 !important;
+    cursor:not-allowed;
+}
         .numero:hover{
             transform:scale(1.08);
         }
@@ -145,17 +148,34 @@ Disponibles
 
 <script>
 
-const grid=document.getElementById("grid");
+const API = "https://script.google.com/macros/s/AKfycbxL1hv4HLK--AWjPfDH5rfuTo4mWVYqbYT0XitBOcp9_CLto1EZ8IVcmH-yTygkPQsG9w/exec";
 
-for(let i=0;i<100;i++){
+const grid = document.getElementById("grid");
 
-let numero=i.toString().padStart(2,"0");
+async function cargarNumeros() {
+    const respuesta = await fetch(API);
+    const datos = await respuesta.json();
 
-grid.innerHTML+=`
-<div class="numero">${numero}</div>
-`;
+    grid.innerHTML = "";
 
+    let disponibles = 0;
+
+    datos.forEach(item => {
+        if (item.estado === "Disponible") disponibles++;
+
+        const clase = item.estado === "Vendido" ? "numero vendido" : "numero";
+
+        grid.innerHTML += `
+            <div class="${clase}">
+                ${String(item.numero).padStart(2, "0")}
+            </div>
+        `;
+    });
+
+    document.getElementById("disponibles").textContent = disponibles;
 }
+
+cargarNumeros();
 
 </script>
 
