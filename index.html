@@ -147,9 +147,7 @@ Disponibles
 </div>
 
 <script>
-
 const API = "https://script.google.com/macros/s/AKfycbxL1hv4HLK--AWjPfDH5rfuTo4mWVYqbYT0XitBOcp9_CLto1EZ8IVcmH-yTygkPQsG9w/exec";
-
 const grid = document.getElementById("grid");
 
 async function cargarNumeros() {
@@ -157,44 +155,32 @@ async function cargarNumeros() {
     const datos = await respuesta.json();
 
     grid.innerHTML = "";
-
     let disponibles = 0;
 
     datos.forEach(item => {
-        if (item.estado === "Disponible") disponibles++;
+        const vendido = item.estado === "Vendido";
+        if (!vendido) disponibles++;
 
-        const clase = item.estado === "Vendido" ? "numero vendido" : "numero";
+        const div = document.createElement("div");
+        div.className = vendido ? "numero vendido" : "numero";
+        div.textContent = String(item.numero).padStart(2, "0");
 
-        grid.innerHTML += `
-            <div class="${clase}">
-                ${String(item.numero).padStart(2, "0")}
-            </div>
-        `;
+        // Solo los disponibles pueden clickearse
+        if (!vendido) {
+            div.addEventListener("click", function() {
+                this.classList.add("vendido");
+                const disp = document.getElementById("disponibles");
+                disp.textContent = parseInt(disp.textContent) - 1;
+            });
+        }
+
+        grid.appendChild(div);
     });
 
     document.getElementById("disponibles").textContent = disponibles;
 }
 
 cargarNumeros();
-
-  // Cargar números vendidos guardados
-  let vendidos = JSON.parse(localStorage.getItem('numerosVendidos') || '[]');
-
-  // Aplicar estado rojo a los ya vendidos al cargar la página
-  document.querySelectorAll('.numero').forEach(function(num) {
-    if (vendidos.includes(num.textContent.trim())) {
-      num.classList.add('vendido');
-    }
-
-    // Al hacer clic
-    num.addEventListener('click', function() {
-      if (!this.classList.contains('vendido')) {
-        this.classList.add('vendido');
-        vendidos.push(this.textContent.trim());
-        localStorage.setItem('numerosVendidos', JSON.stringify(vendidos));
-      }
-    });
-  });
 </script>
 </body>
 </html>
